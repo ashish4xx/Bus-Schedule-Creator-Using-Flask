@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Schedule Creator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-image">
+            <img src="{{ url_for('static', filename='images/cropped-Site-Icon.jpg') }}" alt="Logo" class="header-logo">
+        </div>
+        <div class="header-text">
+            Bus Schedule Creator  
+        </div>
+        
+    </div>
+    <dic class="form-details">
+        <img src="{{ url_for('static', filename='images/Form Details.png') }}" alt="FormDetails" class="formDetails"> 
+    </dic>
+       
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="messages">
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        <form action="/create_excel" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="trip_group_name">Enter Trip Group Name:</label>
+                <input type="text" id="trip_group_name" name="trip_group_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="num_routes">Enter number of routes:</label>
+                <input type="number" id="num_routes" name="num_routes" class="form-control" min="1" required>
+            </div>
+            <div id="routes-container"></div>
+            <div class="excell">
+                <div class="form-group">
+                    <label for="stop_id_file">Upload Stop ID Excel file:</label>
+                    <input type="file" id="stop_id_file" name="stop_id_file" class="form-control" required>
+                </div>
+                <div class="excell-sample">
+                    <img src="{{ url_for('static', filename='images/latlog.png') }}" alt="Logo" class="latlog-logo">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">Create Schedules Excel Sheet</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('num_routes').addEventListener('input', function() {
+            let numRoutes = parseInt(this.value);
+            let routesContainer = document.getElementById('routes-container');
+            routesContainer.innerHTML = '';
+
+            for (let i = 0; i < numRoutes; i++) {
+                let routeHTML = `
+                    <h3>Route ${i + 1}</h3>
+                    <div class="form-group">
+                        <label for="stop_names_${i}">Enter all stop names for route ${i + 1} (one per line):</label>
+                        <textarea id="stop_names_${i}" name="stop_names_${i}" class="form-control" rows="5" required></textarea>
+                    </div>
+                    <h3>Route ${i + 1}</h3>
+                    <div class="form-group">
+                        <label for="route_no_${i}">Enter route number for route ${i + 1}:</label>
+                        <input type="text" id="route_no_${i}" name="route_no_${i}" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="start_time_${i}">Enter first bus schedule Start time for route ${i + 1} (HH:MM:SS):</label>
+                        <input type="text" id="start_time_${i}" name="start_time_${i}" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end_time_${i}">Enter first bus schedule End time for route ${i + 1} (HH:MM:SS):</label>
+                        <input type="text" id="end_time_${i}" name="end_time_${i}" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ac_type_${i}">Is route ${i + 1} AC or Non-AC?</label>
+                        <select id="ac_type_${i}" name="ac_type_${i}" class="form-control" required>
+                            <option value="Non-AC">Non-AC</option>
+                            <option value="AC">AC</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="num_time_zones_${i}">Enter number of time schedule zones for route ${i + 1}:</label>
+                        <input type="number" id="num_time_zones_${i}" name="num_time_zones_${i}" class="form-control" min="1" required>
+                    </div>
+                    <div id="time_zones_${i}"></div>
+                `;
+                routesContainer.innerHTML += routeHTML;
+
+                document.getElementById(`num_time_zones_${i}`).addEventListener('input', function() {
+                    let numTimeZones = parseInt(this.value);
+                    let timeZonesContainer = document.getElementById(`time_zones_${i}`);
+                    timeZonesContainer.innerHTML = '';
+
+                    for (let tz = 0; tz < numTimeZones; tz++) {
+                        let timeZoneHTML = `
+                            <h4>Time Schedule Zone ${tz + 1} for Route ${i + 1}</h4>
+                            <div class="form-group">
+                                <label for="num_trips_${i}_${tz}">Number of trips in zone ${tz + 1}:</label>
+                                <input type="number" id="num_trips_${i}_${tz}" name="num_trips_${i}_${tz}" class="form-control" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="interval_${i}_${tz}">Interval between trips in zone ${tz + 1} (HH:MM:SS):</label>
+                                <select id="interval_${i}_${tz}" name="interval_${i}_${tz}" class="form-control" required>
+                                    <option value="00:05:00">00:05:00</option>
+                                    <option value="00:10:00">00:10:00</option>
+                                    <option value="00:15:00">00:15:00</option>
+                                    <option value="00:20:00">00:20:00</option>
+                                    <option value="00:25:00">00:25:00</option>
+                                    <option value="00:30:00">00:30:00</option>
+                                    <option value="00:35:00">00:35:00</option>
+                                    <option value="00:40:00">00:40:00</option>
+                                    <option value="00:45:00">00:45:00</option>
+                                    <option value="00:50:00">00:50:00</option>
+                                    <option value="00:55:00">00:55:00</option>
+                                    <option value="01:00:00">01:00:00</option>
+                                    <option value="01:05:00">01:05:00</option>
+                                    <option value="01:10:00">01:10:00</option>
+                                    <option value="01:15:00">01:15:00</option>
+                                    <option value="01:20:00">01:20:00</option>
+                                    <option value="01:25:00">01:25:00</option>
+                                    <option value="01:30:00">01:30:00</option>
+                                    <option value="01:35:00">01:35:00</option>
+                                    <option value="01:40:00">01:40:00</option>
+                                    <option value="01:45:00">01:45:00</option>
+                                    <option value="01:50:00">01:50:00</option>
+                                    <option value="01:55:00">01:55:00</option>
+                                    <option value="02:00:00">01:00:00</option>
+                                </select>
+                            </div>
+                        `;
+                        timeZonesContainer.innerHTML += timeZoneHTML;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

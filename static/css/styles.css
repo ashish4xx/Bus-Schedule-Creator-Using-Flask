@@ -1,0 +1,82 @@
+body {
+    background-color: #ffffff;
+    font-family: 'Arial', sans-serif;
+}
+.header {
+    background-color: rgba(0, 68, 102, 0.8); /* Use rgba to add transparency */
+    color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-logo {
+    height: 100px; /* Adjust the size as needed */
+    margin-left: 10px; /* Space between text and logo */
+    border-radius: 25px;
+}
+
+.header-text {
+    flex: 1;
+    text-align: center;
+    font-size: 50px;
+}
+
+.header-image {
+    flex: 0;
+}
+
+.excell{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-details{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    background-color:rgba(0, 68, 102, 0.8);
+    width: 100%;
+}
+
+h1, h2, h3 {
+    color: #004466;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #004466;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.btn {
+    background-color: #004466;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: #003355;
+}
+.container {
+    max-width: 100%;
+    margin: auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
